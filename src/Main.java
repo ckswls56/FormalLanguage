@@ -13,5 +13,10 @@ public class Main {
         nfa.re2nfa();
         nfa.print();
 
+        Dfa dfa = new Dfa(nfa.getPair(),nfa.getLetter());
+        dfa.createDFA();
+        dfa.printDFA();
+
+
     }
 }
