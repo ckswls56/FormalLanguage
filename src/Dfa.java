@@ -30,16 +30,15 @@ public class Dfa {
     public List<Character[]> getDFA() {
         List<Character[]> redfa = new ArrayList<>();
         for (Character[] ch : dfa) {
-            if(getSet(ch[0])==null||getSet(ch[0]).isEmpty()) {
+            if (getSet(ch[0]) == null || getSet(ch[0]).isEmpty()) {
                 continue;
-            }
-            else {
+            } else {
                 Character[] newch = new Character[ch.length];
-                for(int i=0;i<ch.length;i++) {
-                    if(ch[i]==null)
+                for (int i = 0; i < ch.length; i++) {
+                    if (ch[i] == null)
                         continue;
                     Set<Integer> set = getSet(ch[i]);
-                    if(set == null||set.isEmpty())
+                    if (set == null || set.isEmpty())
                         newch[i] = null;
                     else
                         newch[i] = ch[i];
@@ -63,16 +62,16 @@ public class Dfa {
         System.out.println("--------DFA--------");
 
         for (Entry<Set<Integer>, Integer> entry : map.entrySet()) {
-            if(entry.getValue()==-1)
+            if (entry.getValue() == -1)
                 continue;
-            System.out.println((char)entry.getValue().intValue() +" = " + entry.getKey() + (isStart(entry.getKey())?" START ":"") + (isEnd(entry.getKey())?" END ":"") );
+            System.out.println((char) entry.getValue().intValue() + " = " + entry.getKey() + (isStart(entry.getKey()) ? " START " : "") + (isEnd(entry.getKey()) ? " END " : ""));
         }
         System.out.println("--------DFA--------");
     }
 
     private boolean isStart(Set<Integer> set) {
         for (Integer integer : set) {
-            if(integer == pair.startNode.getState())
+            if (integer == pair.startNode.getState())
                 return true;
         }
         return false;
@@ -80,8 +79,8 @@ public class Dfa {
 
     private boolean isEnd(Set<Integer> set) {
         for (Integer integer : set) {
-            if(integer == pair.endNode.getState()) {
-                endState.add(new Character((char)getCharacter(set).intValue()));
+            if (integer == pair.endNode.getState()) {
+                endState.add(Character.valueOf((char) getCharacter(set).intValue()));
                 return true;
             }
         }
@@ -90,26 +89,25 @@ public class Dfa {
 
     public void createDFA() {
         tempset = new HashSet<>();
-        Set<Integer> start= move(pair.startNode,-1);
+        Set<Integer> start = move(pair.startNode, -1);
         map.put(start, state);
         queue.add(state++);
-        while(!queue.isEmpty()) {
-            Character[] dfaline = new Character[letter.length-1];
+        while (!queue.isEmpty()) {
+            Character[] dfaline = new Character[letter.length - 1];
             int character = queue.poll();
             System.out.println();
-            System.out.println((char)character);
-            dfaline[0] = (char)character;
+            System.out.println((char) character);
+            dfaline[0] = (char) character;
             Set<Integer> set = getSet(character);
-            for(int i=1;i<letter.length-1;i++) {
+            for (int i = 1; i < letter.length - 1; i++) {
                 tempset = new HashSet<>();
                 Set<Integer> midset = new HashSet<>();
                 for (Integer integer : set) {
                     Node node = getNode(pair.startNode, integer);
                     revisit();
-                    if(node==null) {
+                    if (node == null) {
                         continue;
-                    }
-                    else if((char)node.getEdge() == letter[i].charAt(0)) {
+                    } else if ((char) node.getEdge() == letter[i].charAt(0)) {
                         midset.add(node.next.getState());
                     }
                 }
@@ -119,26 +117,23 @@ public class Dfa {
                     move(node, -1);
                 }
                 Integer c = getCharacter(tempset);
-                if(c==null) {
-                    if(tempset.isEmpty()) {
+                if (c == null) {
+                    if (tempset.isEmpty()) {
                         map.put(tempset, -1);
                         System.out.println("null");
                         dfaline[i] = null;
-                    }
-                    else {
+                    } else {
                         queue.add(state);
                         System.out.println(dfaline[i]);
-                        dfaline[i] = (char)state;
+                        dfaline[i] = (char) state;
                         map.put(tempset, state++);
                     }
-                }
-                else {
-                    if(c==-1) {
+                } else {
+                    if (c == -1) {
                         System.out.println("null");
                         dfaline[i] = null;
-                    }
-                    else {
-                        dfaline[i] = (char)c.intValue();
+                    } else {
+                        dfaline[i] = (char) c.intValue();
                         System.out.println(dfaline[i]);
                     }
                 }
@@ -154,15 +149,14 @@ public class Dfa {
     }
 
     private void connect(Node node, int i) {
-        if(node==null||node.isVisited())
+        if (node == null || node.isVisited())
             return;
         node.setVisited();
         tempset.add(node.getState());
-        if(node.getEdge()==-1||node.getEdge()==i) {
+        if (node.getEdge() == -1 || node.getEdge() == i) {
             connect(node.next, i);
             connect(node.next2, i);
-        }
-        else
+        } else
             return;
     }
 
@@ -188,8 +182,8 @@ public class Dfa {
     }
 
     private Set<Integer> getSet(int character) {
-        for (Entry<Set<Integer>, Integer> m :map.entrySet())  {
-            if(m.getValue()==character)
+        for (Entry<Set<Integer>, Integer> m : map.entrySet()) {
+            if (m.getValue() == character)
                 return m.getKey();
         }
         return null;
@@ -203,6 +197,7 @@ public class Dfa {
         revisit(node.next);
         revisit(node.next2);
     }
+
     private void revisit() {
         pair.startNode.setUnVisited();
         revisit(pair.startNode.next);

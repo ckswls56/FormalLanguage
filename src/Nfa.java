@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 public class Nfa {
 
@@ -13,6 +10,13 @@ public class Nfa {
 
     private String[] letter; //alphabet
     private Pair pair;
+    Map<List<String>, List<String>> map = new HashMap<>();
+
+    private Fa fa;
+
+    public Fa getFa() {
+        return fa;
+    }
 
     public Nfa(String re) {
         this.re = re;
@@ -181,30 +185,32 @@ public class Nfa {
             }
         }
 
-        System.out.println("--------NFA--------");
-        System.out.print("StateSet = { ");
-        for(int i=0;i<constructor.getNfaManager().getNfaStates()-1;i++)
-                System.out.print("q"+i+", ");
-        System.out.println("q"+(constructor.getNfaManager().getNfaStates()-1) +" }");
+        fa = new Fa();
+        List<String> s = new ArrayList<>();
+
+        for(int i=0;i<constructor.getNfaManager().getNfaStates()-1;i++){
+            s.add(String.format("q%03d", i));
+        }
+        s.add(String.format("q%03d",constructor.getNfaManager().getNfaStates()-1));
+        fa.setQ(s);
     }
 
     public void print() {
         restate(this.pair.startNode);
         revisit(this.pair.startNode);
 
-
-        System.out.print("TerminalSet :{ ");
-        Arrays.stream(letter).forEach(element -> System.out.print(element + " "));
-        System.out.println("}");
-        System.out.println("DeltaFunctions = {");
         printNfa(this.pair.startNode);
-        System.out.println("}");
+
         revisit(this.pair.startNode);
 
-        System.out.println("start state: " + (this.pair.startNode.getState()));
-        System.out.println("end state: " + (this.pair.endNode.getState()));
+        List<String> list = new ArrayList<>(Arrays.asList(letter));
+        list.removeIf(String::isEmpty);
+        fa.setSigma(list);
 
-        System.out.println("\n--------NFA--------");
+        fa.setDelta(map);
+        fa.setStartState(String.format("q%03d",this.pair.startNode.getState()));
+        fa.setFinalState(String.format("q%03d",this.pair.endNode.getState()));
+
     }
 
     private void restate(Node startNfa) {
@@ -235,33 +241,31 @@ public class Nfa {
         startNfa.setVisited();
 
         printNfaNode(startNfa);
-//        if (startNfa.next != null) {
-//            System.out.println("appendRow!");
-//        }
         printNfa(startNfa.next);
         printNfa(startNfa.next2);
     }
 
     private void printNfaNode(Node node) {
         if (node.next != null) {
-            System.out.print(" (q" + node.getState());
+            String s = String.format("q%03d",node.getState());
+            List<String> temp = new ArrayList<>();
+            temp.add(s);
+            List<String> nextSymbol = new ArrayList<>();
             if (node.getEdge() == -1) {
                 //입실론인 경우
-                if (node.next2 != null)
-                    System.out.println(", ε) = {" + node.next.getState() + "," + node.next2.getState() + "}");
-                else
-                    System.out.println(", ε) = {" + node.next.getState() + "}");
+                temp.add("ε");
             } else {
                 //입실론이 아닌 경우
                 int index = getindex("" + (char) node.getEdge());
-
-                if (node.next2 != null)
-                    System.out.println(", "+letter[index] + " ) = " + "{" + node.next.getState() + "," + node.next2.getState() + "}");
-                else
-                    System.out.println(", "+letter[index] + " ) = " + "{" + node.next.getState() + "}");
-
-
+                temp.add(letter[index]);
             }
+            if (node.next2 != null){
+                nextSymbol.add(String.format("q%03d",node.next.getState())+","+String.format("q%03d",node.next2.getState()));
+            }
+            else{
+                nextSymbol.add(String.format("q%03d",node.next.getState()));
+            }
+            map.put(temp,nextSymbol);
         } else {
             // 더이상 갈 수 없는 상태
         }
