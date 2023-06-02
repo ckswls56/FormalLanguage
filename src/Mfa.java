@@ -8,7 +8,8 @@ public class Mfa {
         Map<Set<String>, String> newStates = new HashMap<>();
         int i = 0;
         for (Set<String> partition : partitions.keySet()) {
-            String newState = "q" + i++;
+            String newState = partition.iterator().next();
+                    //String.format("q%03d", i++);
             newStates.put(partition, newState);
             minimizedDfa.getQ().add(newState);
 
@@ -22,10 +23,11 @@ public class Mfa {
 
         for (Map.Entry<Set<String>, List<Map.Entry<String, Set<String>>>> partition : partitions.entrySet()) {
             String fromState = newStates.get(partition.getKey());
-            for (Map.Entry<String, Set<String>> transition : partition.getValue()) {
-                String toState = newStates.get(transition.getValue());
-                List<String> transitionKey = Arrays.asList(fromState, transition.getKey());
-                minimizedDfa.getDelta().put(transitionKey, Arrays.asList(toState));
+            for (String transition : dfa.getSigma()) {
+                List<String> transitionKey = Arrays.asList(fromState, transition);
+                List<String> toState = dfa.getDelta().get(transitionKey);
+                if(toState!= null)
+                    minimizedDfa.getDelta().put(transitionKey, toState);
             }
         }
 
@@ -44,7 +46,6 @@ public class Mfa {
         nonFinalStates.removeAll(dfa.getFinalState());
         partitions.put(new HashSet<>(dfa.getFinalState()), new ArrayList<>());
         partitions.put(nonFinalStates, new ArrayList<>());
-        int size = nonFinalStates.size();
 
         boolean changed;
         do {
@@ -63,15 +64,19 @@ public class Mfa {
                     }
                 }
 
-                if (toStates.size() > 1 && size == toStates.size()) {
+                if (toStates.size() > 1) {
                     // Partition is not uniform, split it
-                    partitions.remove(partition.getKey());
+
+                    int size = partitions.size();
                     for (Set<String> newPartition : toStates.values()) {
                         partitions.put(newPartition, new ArrayList<>());
                     }
-                    changed = true;
-                    size = toStates.size();
-                    break;
+                    if(size != partitions.size()){
+                        partitions.remove(partition.getKey());
+                        changed = true;
+                        break;
+                    }
+
                 }
             }
         } while (changed);
