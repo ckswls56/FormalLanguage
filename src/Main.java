@@ -15,6 +15,7 @@ public class Main {
 
         System.out.println("--------NFA--------");
         nfa.getFa().print();
+        nfa.getFa().printToFile("NFA.txt");
         System.out.println("\n--------NFA--------");
 
         NfaToDfa dfaConverter = new NfaToDfa(nfa.getFa());
@@ -22,6 +23,7 @@ public class Main {
 
         System.out.println("--------DFA--------");
         dfa.print();
+        dfa.printToFile("DFA.txt");
         dfa.printSimple();
         System.out.println("\n--------DFA--------");
 
@@ -30,6 +32,7 @@ public class Main {
 
         System.out.println("--------MFA--------");
         mfa.print();
+        mfa.printToFile("MFA.txt");
         mfa.printSimple();
         System.out.println("\n--------MFA--------");
 

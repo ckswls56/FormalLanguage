@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Fa {
@@ -57,6 +60,50 @@ public class Fa {
         for (String s : finalState
         ) {
             System.out.print(s);
+        }
+    }
+    public void printToFile(String filename) {
+        try (PrintWriter out = new PrintWriter(new FileWriter(filename))) {
+
+            out.print("StateSet = { ");
+            Collections.sort(Q);
+            out.print(Q.toString().substring(1,Q.toString().length()-1)+" ");
+            out.println("}");
+
+            out.print("TerminalSet :{ ");
+            out.print(Sigma.toString().substring(1,Sigma.toString().length()-1));
+            out.println(" }");
+
+            out.println("DeltaFunctions = {");
+
+            int maxKeyLength = 0;
+            for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
+                List<String> key = entry.getKey();
+                String keyString = key.toString();
+                if (keyString.length() > maxKeyLength) {
+                    maxKeyLength = keyString.length();
+                }
+            }
+
+            for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
+                List<String> key = entry.getKey();
+                List<String> values = entry.getValue();
+
+                String keyString = key.toString();
+                out.print(String.format("%-" + maxKeyLength + "s", keyString) + " = " + "{ "+ values.toString().substring(1, values.toString().length()-1)+ " }");
+
+                out.println();
+            }
+            out.println("}");
+
+            out.println("start state: " + (startState));
+            out.print("end state: ");
+            for (String s : finalState) {
+                out.print(s);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
