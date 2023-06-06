@@ -12,21 +12,25 @@ public class Main {
         nfa.postfix();
         nfa.re2nfa();
         nfa.print();
+
         System.out.println("--------NFA--------");
         nfa.getFa().print();
         System.out.println("\n--------NFA--------");
 
         NfaToDfa dfaConverter = new NfaToDfa(nfa.getFa());
         Fa dfa = dfaConverter.convert();
+
         System.out.println("--------DFA--------");
         dfa.print();
         dfa.printSimple();
         System.out.println("\n--------DFA--------");
 
-        Mfa mfa = new Mfa();
+        Mfa mfaConverter = new Mfa();
+        Fa mfa = mfaConverter.minimizeDfa(dfa);
+
         System.out.println("--------MFA--------");
-        mfa.minimizeDfa(dfa).print();
-        mfa.minimizeDfa(dfa).printSimple();
+        mfa.print();
+        mfa.printSimple();
         System.out.println("\n--------MFA--------");
 
     }

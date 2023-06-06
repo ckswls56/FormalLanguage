@@ -1,4 +1,6 @@
 import java.util.*;
+import java.util.stream.Collectors;
+
 public class Mfa {
 
     public Fa minimizeDfa(Fa dfa) {
@@ -8,8 +10,8 @@ public class Mfa {
         Map<Set<String>, String> newStates = new HashMap<>();
         int i = 0;
         for (Set<String> partition : partitions.keySet()) {
-            String newState = partition.iterator().next();
-                    //String.format("q%03d", i++);
+            String newState = partition.toString();
+            //String.format("q%03d", i++);
             newStates.put(partition, newState);
             minimizedDfa.getQ().add(newState);
 
@@ -22,12 +24,27 @@ public class Mfa {
         }
 
         for (Map.Entry<Set<String>, List<Map.Entry<String, Set<String>>>> partition : partitions.entrySet()) {
-            String fromState = newStates.get(partition.getKey());
             for (String transition : dfa.getSigma()) {
-                List<String> transitionKey = Arrays.asList(fromState, transition);
-                List<String> toState = dfa.getDelta().get(transitionKey);
-                if(toState!= null)
-                    minimizedDfa.getDelta().put(transitionKey, toState);
+                for (String s : partition.getKey()) {
+                    List<String> transitionKey = Arrays.asList(s, transition);
+                    List<String> toState = dfa.getDelta().get(transitionKey);
+
+                    if (toState != null) {
+                        List<String> newState = null;
+                        for (Set<String> set : partitions.keySet()) {
+                            if (set.toString().contains(toState.toString())) {
+                                newState = set.stream().toList();
+                            }
+                        }
+
+                        minimizedDfa.getDelta().put(Arrays.asList(partition.getKey().toString(), transition), newState);
+
+                    }
+
+
+                }
+
+
             }
         }
 
@@ -71,7 +88,7 @@ public class Mfa {
                     for (Set<String> newPartition : toStates.values()) {
                         partitions.put(newPartition, new ArrayList<>());
                     }
-                    if(size != partitions.size()){
+                    if (size != partitions.size()) {
                         partitions.remove(partition.getKey());
                         changed = true;
                         break;

@@ -2,10 +2,10 @@ import java.util.*;
 
 public class Fa {
     private List<String> Q = new ArrayList<>();
-    private List<String> Sigma =new ArrayList<>();
+    private List<String> Sigma = new ArrayList<>();
     private Map<List<String>, List<String>> delta = new HashMap<>();
     private String startState;
-    private List<String> finalState =new ArrayList<>();
+    private List<String> finalState = new ArrayList<>();
     private Map<String, String> stateNames = new HashMap<>(); // new mapping
 
 
@@ -20,8 +20,9 @@ public class Fa {
         this.finalState = finalState;
     }
 
-    public void print(){
+    public void print() {
         System.out.print("StateSet = { ");
+        Collections.sort(Q);
         System.out.print(Q.toString());
         System.out.println("}");
 
@@ -30,11 +31,22 @@ public class Fa {
         System.out.println("}");
 
         System.out.println("DeltaFunctions = {");
+
+        int maxKeyLength = 0;
+        for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
+            List<String> key = entry.getKey();
+            String keyString = key.toString();
+            if (keyString.length() > maxKeyLength) {
+                maxKeyLength = keyString.length();
+            }
+        }
+
         for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
             List<String> key = entry.getKey();
             List<String> values = entry.getValue();
 
-            System.out.print(key +"= "+ values);
+            String keyString = key.toString();
+            System.out.print(String.format("%-" + maxKeyLength + "s", keyString) + " = " + values);
 
             System.out.println();
         }
@@ -42,8 +54,8 @@ public class Fa {
 
         System.out.println("start state: " + (startState));
         System.out.print("end state: ");
-        for (String s:finalState
-             ) {
+        for (String s : finalState
+        ) {
             System.out.print(s);
         }
     }
@@ -57,10 +69,10 @@ public class Fa {
 
     public void printSimple() {
         assignStateNames();
-
+        System.out.println("\n---------------\nPrint Simple Version");
         System.out.print("\nStateSet = {");
         for (String q : Q) {
-            System.out.print("\t" + stateNames.get(q));
+            System.out.print(stateNames.get(q) + " ");
         }
         System.out.println("}");
 
@@ -72,9 +84,9 @@ public class Fa {
         for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
             List<String> key = entry.getKey();
             List<String> values = entry.getValue();
-            String newKey = "( "+stateNames.get(key.get(0))+", "+ key.get(1)+" )";
+            String newKey = "( " + stateNames.get(key.get(0)) + ", " + key.get(1) + " )";
             String newValue = stateNames.get(values.toString());
-            System.out.print(newKey +" = "+ newValue);
+            System.out.print(newKey + " = " + newValue);
 
             System.out.println();
         }
@@ -85,12 +97,12 @@ public class Fa {
         System.out.println("start state: " + stateNames.get(startState));
 
         System.out.print("end state: ");
-        for (String s: finalState) {
+        for (String s : finalState) {
             System.out.print("\t" + stateNames.get(s));
         }
     }
 
-    public void removeSigma(String s){
+    public void removeSigma(String s) {
         Sigma.remove(s);
     }
 
