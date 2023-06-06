@@ -23,12 +23,12 @@ public class Fa {
     public void print() {
         System.out.print("StateSet = { ");
         Collections.sort(Q);
-        System.out.print(Q.toString());
+        System.out.print(Q.toString().substring(1,Q.toString().length()-1)+" ");
         System.out.println("}");
 
         System.out.print("TerminalSet :{ ");
-        System.out.print(Sigma.toString());
-        System.out.println("}");
+        System.out.print(Sigma.toString().substring(1,Sigma.toString().length()-1));
+        System.out.println(" }");
 
         System.out.println("DeltaFunctions = {");
 
@@ -46,7 +46,7 @@ public class Fa {
             List<String> values = entry.getValue();
 
             String keyString = key.toString();
-            System.out.print(String.format("%-" + maxKeyLength + "s", keyString) + " = " + values);
+            System.out.print(String.format("%-" + maxKeyLength + "s", keyString) + " = " + "{ "+ values.toString().substring(1, values.toString().length()-1)+ " }");
 
             System.out.println();
         }
@@ -71,14 +71,18 @@ public class Fa {
         assignStateNames();
         System.out.println("\n---------------\nPrint Simple Version");
         System.out.print("\nStateSet = {");
-        for (String q : Q) {
-            System.out.print(stateNames.get(q) + " ");
+        int size = Q.size();
+        for (int i = 0; i < size; i++) {
+            System.out.print(stateNames.get(Q.get(i)));
+            if (i < size - 1) {
+                System.out.print(", ");
+            }
         }
         System.out.println("}");
 
         System.out.print("TerminalSet :{ ");
-        System.out.print(Sigma.toString());
-        System.out.println("}");
+        System.out.print(Sigma.toString().substring(1,Sigma.toString().length()-1));
+        System.out.println(" }");
 
         System.out.println("DeltaFunctions = {");
         for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
@@ -86,7 +90,7 @@ public class Fa {
             List<String> values = entry.getValue();
             String newKey = "( " + stateNames.get(key.get(0)) + ", " + key.get(1) + " )";
             String newValue = stateNames.get(values.toString());
-            System.out.print(newKey + " = " + newValue);
+            System.out.print(newKey + " = " + "{" + newValue + "}");
 
             System.out.println();
         }
