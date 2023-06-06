@@ -6,6 +6,8 @@ public class Fa {
     private Map<List<String>, List<String>> delta = new HashMap<>();
     private String startState;
     private List<String> finalState =new ArrayList<>();
+    private Map<String, String> stateNames = new HashMap<>(); // new mapping
+
 
     public Fa() {
     }
@@ -43,6 +45,48 @@ public class Fa {
         for (String s:finalState
              ) {
             System.out.print(s);
+        }
+    }
+
+    public void assignStateNames() {
+        int stateCounter = 0;
+        for (String state : Q) {
+            stateNames.put(state, "State" + stateCounter++);
+        }
+    }
+
+    public void printSimple() {
+        assignStateNames();
+
+        System.out.print("\nStateSet = {");
+        for (String q : Q) {
+            System.out.print("\t" + stateNames.get(q));
+        }
+        System.out.println("}");
+
+        System.out.print("TerminalSet :{ ");
+        System.out.print(Sigma.toString());
+        System.out.println("}");
+
+        System.out.println("DeltaFunctions = {");
+        for (Map.Entry<List<String>, List<String>> entry : delta.entrySet()) {
+            List<String> key = entry.getKey();
+            List<String> values = entry.getValue();
+            String newKey = "( "+stateNames.get(key.get(0))+", "+ key.get(1)+" )";
+            String newValue = stateNames.get(values.toString());
+            System.out.print(newKey +" = "+ newValue);
+
+            System.out.println();
+        }
+        System.out.println("}");
+
+        // ... print the other components similarly
+
+        System.out.println("start state: " + stateNames.get(startState));
+
+        System.out.print("end state: ");
+        for (String s: finalState) {
+            System.out.print("\t" + stateNames.get(s));
         }
     }
 

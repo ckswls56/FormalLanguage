@@ -20,11 +20,13 @@ public class Main {
         Fa dfa = dfaConverter.convert();
         System.out.println("--------DFA--------");
         dfa.print();
+        dfa.printSimple();
         System.out.println("\n--------DFA--------");
 
         Mfa mfa = new Mfa();
         System.out.println("--------MFA--------");
         mfa.minimizeDfa(dfa).print();
+        mfa.minimizeDfa(dfa).printSimple();
         System.out.println("\n--------MFA--------");
 
     }
